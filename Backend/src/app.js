@@ -47,16 +47,37 @@ app.use((req, res, next) => {
 const mongoSanitize = require('express-mongo-sanitize');
 
 // Security middleware
+// Security middleware
 app.use(mongoSanitize())
 app.use(helmet())
 
-// CORS configuration
+// CORS configuration (UPDATED FOR DYNAMIC RECOGNITION)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://aurielle-store-5enm.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean); // Filters out any undefined environment values safely
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: function (origin, callback) {
+      // 1. Allow internal requests or utilities like Postman (no origin)
+      if (!origin) return callback(null, true);
+      
+      // 2. Match hardcoded origins OR trust any dynamic Vercel deployment subdomain
+      if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+      
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
   })
-)
+);
+
 
 // Logging middleware
 if (process.env.NODE_ENV === 'development') {
