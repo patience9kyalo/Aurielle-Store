@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import ProductCard from '@/components/product/ProductCard';
 
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,5 +58,18 @@ export default function ProductsPage() {
         </div>
       )}
     </section>
+  );
+}
+
+// 2. Export the main page wrapped in Suspense so Next.js compiles it
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <section className="mx-auto max-w-7xl px-6 py-12">
+        <p className="text-charcoal/50">Loading shop layout…</p>
+      </section>
+    }>
+      <ProductsContent />
+    </Suspense>
   );
 }
