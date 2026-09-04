@@ -1,6 +1,6 @@
 // const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
-const API_URL = "https://aurielle-store.onrender.com"; // Updated to point to the deployed backend
+const API_URL = "https://aurielle-store.onrender.com/api"; // Updated to point to the deployed backend
 
 const getToken = () => {
   if (typeof window === 'undefined') return null; // SSR guard
